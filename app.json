@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "davidhabitcoach",
-    "slug": "davidhabitcoach",
+    "slug": "tracker",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -36,6 +36,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "168dd3a2-e8e7-4adf-9873-335d306a3a6b"
+      }
+    },
+    "owner": "drteter"
   }
 }
