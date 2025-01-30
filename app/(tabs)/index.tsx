@@ -4,28 +4,17 @@ import { ThemedView } from '../../components/ThemedView';
 import HabitList from '../../components/HabitList';
 import { useHabits } from '../../hooks/useHabits';
 import { habitService } from '../../services/habitService';
+import { HabitSummary } from '../../components/HabitSummary';
 
 export default function HomeScreen() {
   const { habits, loadHabits } = useHabits();
 
-  // Set up the global addHabit function
+  // Set up the global loadHabits function
   useEffect(() => {
-    global.addHabit = async () => {
-      try {
-        await habitService.addHabit({
-          name: "New Habit",
-          createdAt: new Date(),
-          completedDates: []
-        });
-        // Reload habits after adding a new one
-        loadHabits();
-      } catch (e) {
-        console.error('Failed to add habit:', e);
-      }
-    };
+    global.loadHabits = loadHabits;
 
     return () => {
-      global.addHabit = undefined;
+      global.loadHabits = undefined;
     };
   }, [loadHabits]);
 
@@ -33,13 +22,19 @@ export default function HomeScreen() {
     try {
       const today = new Date().toISOString().split('T')[0];
       const habit = habits.find(h => h.id === habitId);
-      if (!habit) return;
+      if (!habit) {
+        console.error('Habit not found:', habitId);
+        return;
+      }
 
-      await habitService.toggleHabitCompletion(habitId, today);
-      // Reload habits after toggling
-      loadHabits();
-    } catch (e) {
-      console.error('Failed to toggle habit:', e);
+      // Add a loading state if needed
+      await habitService.toggleHabitCompletion(habitId, today, {});
+      
+      // Reload habits after successful toggle
+      await loadHabits();
+    } catch (error) {
+      console.error('Failed to toggle habit:', error);
+      // Handle error (maybe show a toast or alert)
     }
   };
 
@@ -59,6 +54,7 @@ export default function HomeScreen() {
         habits={habits}
         onToggleHabit={handleToggleHabit}
         onUpdateHabit={handleUpdateHabit}
+        ListHeaderComponent={<HabitSummary habits={habits} />}
       />
     </ThemedView>
   );
